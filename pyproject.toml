@@ -1,0 +1,56 @@
+[project]
+name = "grandschemathings"
+version = "1.1.6"
+description = "Automatic loading/saving of JSON based on Python objects"
+authors = [
+    {name = "Simeon Jenkins"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jsonschema (>=4.23.0,<5.0.0)",
+    "types-jsonschema (>=4.23.0.20241208,<5.0.0.0)"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+
+[project.urls]
+"Repository" = "https://github.com/cambridgeconsultants/GrandSchemaThings"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+mypy = "^1.14.1"
+flake8 = "^7.1.1"
+black = "^24.10.0"
+pydocstyle = "^6.3.0"
+
+[tool.black]
+line-length = 88
+
+[tool.pydocstyle]
+convention = "google"
+add-ignore = "D202" # Contradicts black's autoformatting
+match-dir = "grandschemathings"
+
+[tool.mypy]
+files = "grandschemathings/"
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=grandschemathings --cov-report=html"
+
+[tool.poetry.scripts]
+validate = "scripts.validate:validate"
+release = "scripts.release:main"
