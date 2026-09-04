@@ -1,6 +1,6 @@
 [project]
 name = "grandschemathings"
-version = "1.1.7"
+version = "1.1.8"
 description = "Automatic loading/saving of JSON based on Python objects"
 authors = [
     {name = "Simeon Jenkins"}
