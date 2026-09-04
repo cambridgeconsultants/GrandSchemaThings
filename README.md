@@ -1,12 +1,26 @@
-# grandschemathings
+# GrandSchemaThings
 
-Automatic JSON serialization, deserialization, and schema generation for Python dataclasses.
+Repository: [GitHub](https://github.com/cambridgeconsultants/GrandSchemaThings)
+PyPI: [GrandSchemaThings](https://pypi.org/project/grandschemathings/)
 
-The grandschemathings Python package provides automatic loading and saving of JSON based
-on Python objects, with validation against an automatically-generated schema. It is
+The GrandSchemaThings Python package provides automatic loading and saving of JSON for
+Python objects, with validation against an automatically-generated schema. It is
 designed to make it easy to serialize and deserialize objects to and from JSON.
 
-Repository: [github.com/cambridgeconsultants/GrandSchemaThings](https://github.com/cambridgeconsultants/GrandSchemaThings)
+## Why use GrandSchemaThings?
+
+Compared to a simple `dataclasses.asdict()` approach, GrandSchemaThings:
+
+- Reconstructs typed dataclass objects from JSON
+- Automatically generates a matching [JSON Schema](https://json-schema.org/)
+- Validates incoming data against that schema when loading
+- Recursively handles nested GrandSchemaThings dataclasses, enums, lists and dictionaries
+  - Supported field types are: int, str, float, bool, Enum, list[T], dict[str, T],
+    dict[Enum, T], and nested GrandSchemaThings subclasses. JSON-compatible restrictions
+    apply.
+  - Enums are serialised using their name (for example, `Hobby.READING` becomes
+    `"READING"`) and are represented in the schema as [JSON schema enums](https://json-schema.org/understanding-json-schema/reference/enum)
+- Provides a single, consistent API for serialisation and deserialisation
 
 ## User Guide
 
@@ -32,7 +46,8 @@ poetry add grandschemathings
 
 #### Simple Usage Example
 
-Here's a simple example to illustrate how you can use grandschemathings to serialize and deserialize an object.
+Here's a simple example to illustrate how you can use GrandSchemaThings to serialize and
+deserialize an object.
 
 ```python
 from dataclasses import dataclass
