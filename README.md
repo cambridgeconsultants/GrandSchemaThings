@@ -1,7 +1,6 @@
 # GrandSchemaThings
 
-Repository: [GitHub](https://github.com/cambridgeconsultants/GrandSchemaThings)
-PyPI: [GrandSchemaThings](https://pypi.org/project/grandschemathings/)
+[GitHub](https://github.com/cambridgeconsultants/GrandSchemaThings) | [PyPI](https://pypi.org/project/grandschemathings/)
 
 The GrandSchemaThings Python package provides automatic loading and saving of JSON for
 Python objects, with validation against an automatically-generated schema. It is
