@@ -13,13 +13,29 @@ Compared to a simple `dataclasses.asdict()` approach, GrandSchemaThings:
 - Reconstructs typed dataclass objects from JSON
 - Automatically generates a matching [JSON Schema](https://json-schema.org/)
 - Validates incoming data against that schema when loading
-- Recursively handles nested GrandSchemaThings dataclasses, enums, lists and dictionaries
-  - Supported field types are: int, str, float, bool, Enum, list[T], dict[str, T],
-    dict[Enum, T], and nested GrandSchemaThings subclasses. JSON-compatible restrictions
-    apply.
-  - Enums are serialised using their name (for example, `Hobby.READING` becomes
-    `"READING"`) and are represented in the schema as [JSON schema enums](https://json-schema.org/understanding-json-schema/reference/enum)
-- Provides a single, consistent API for serialisation and deserialisation
+- Recursively handles nested objects when deserialising as well as serialising (such as
+  enums, lists, dictionaries, and other GrandSchemaThings objects)
+
+## What types does GrandSchemaThings support?
+
+Supported field types are:
+
+- `int`, `str`, `float` and `bool`
+- `Enum`
+- `list[T]`
+- `dict[str, T]` and `dict[Enum, T]`
+- nested GrandSchemaThings subclasses
+
+GrandSchemaThings follows a strict, fully-explicit JSON model: all dataclass fields must
+have fully concrete, non-nullable types. `Optional[T]`, `T | None`, and other `Union`
+types are intentionally unsupported. Dataclass field defaults are permitted as a
+Python-side convenience, but are still marked as required in generated JSON schemas.
+Note also that `tuple` and `set` are not supported because they do not have a JSON
+equivalent.
+
+Enums are serialised using their name (for example, Hobby.READING becomes "READING", not
+"reading") and are represented in the schema as
+[JSON schema enums](https://json-schema.org/understanding-json-schema/reference/enum).
 
 ## User Guide
 
