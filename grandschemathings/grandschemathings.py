@@ -4,7 +4,8 @@ import json
 from dataclasses import asdict, dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Self, TypeVar, cast, get_type_hints, overload
+from types import UnionType
+from typing import Any, Self, TypeVar, Union, cast, get_type_hints, overload
 
 from jsonschema import validate
 
@@ -188,6 +189,18 @@ class GrandSchemaThings:
         )
 
 
+def check_not_union(attr_type) -> None:
+    """Checks that a type is not a union or optional."""
+    if isinstance(attr_type, UnionType) or (
+        hasattr(attr_type, "__origin__")
+        and getattr(attr_type, "__origin__", None) is Union
+    ):
+        raise ValueError(
+            "Optional/Union types are not supported. "
+            "GrandSchemaThings requires fully explicit, non-nullable types."
+        )
+
+
 @overload
 def _type_schema(
     attr_type: type[int | str | float | bool | Enum],
@@ -216,6 +229,7 @@ def _type_schema(
     Returns:
         dict[str, Any]: The JSON schema in dict form.
     """
+    check_not_union(attr_type)
     if any(attr_type is t for t in [int, str, float, bool]):
         json_names = {
             "int": "integer",
@@ -247,7 +261,8 @@ def _type_schema(
                 "str or Enum"
             )
         raise NotImplementedError(
-            f"Iterable type {iter_type} not currently implemented"
+            "Only JSON-native container types (list and dict) are supported. "
+            f"Container type {iter_type} is not supported."
         )
     if issubclass(attr_type, Enum):
         return {"type": "string", "enum": [e.name for e in attr_type]}
@@ -348,7 +363,7 @@ def _convert_from_jsonlike(
     # Get the actual type indicated by the target type, even if it's a container
     target_type_raw = getattr(target_type, "__origin__", target_type)
     target_type_args: tuple = getattr(target_type, "__args__", tuple())
-
+    check_not_union(target_type)
     # Convert enums and instances of GrandSchemaThings
     if issubclass(target_type_raw, Enum):
         if not isinstance(data, str):
