@@ -12,7 +12,7 @@ Compared to a simple `dataclasses.asdict()` approach, GrandSchemaThings:
 
 - Reconstructs typed dataclass objects from JSON
 - Automatically generates a matching [JSON Schema](https://json-schema.org/)
-- Validates incoming data against that schema when loading
+- Validates incoming data against that schema
 - Recursively handles nested objects when deserialising as well as serialising (such as
   enums, lists, dictionaries, and other GrandSchemaThings objects)
 
@@ -26,16 +26,17 @@ Supported field types are:
 - `dict[str, T]` and `dict[Enum, T]`
 - nested GrandSchemaThings subclasses
 
-GrandSchemaThings follows a strict, fully-explicit JSON model: all dataclass fields must
-have fully concrete, non-nullable types. `Optional[T]`, `T | None`, and other `Union`
-types are intentionally unsupported. Dataclass field defaults are permitted as a
-Python-side convenience, but are still marked as required in generated JSON schemas.
-Note also that `tuple` and `set` are not supported because they do not have a JSON
-equivalent.
+The following constraints are enforced:
 
-Enums are serialised using their name (for example, Hobby.READING becomes "READING", not
-"reading") and are represented in the schema as
-[JSON schema enums](https://json-schema.org/understanding-json-schema/reference/enum).
+- GrandSchemaThings follows a strict, fully explicit JSON model: all dataclass fields
+  must have fully concrete, non-nullable types
+  - So, `Optional[T]`, `T | None`, and other `Union` types are intentionally disallowed
+  - Dataclass field defaults are permitted as a Python-side convenience, but are still
+    marked as required in generated JSON schemas
+- `tuple` and `set` are not supported because they do not have a JSON equivalent
+- Enums are serialised using their name (for example, in the example below,
+  Hobby.READING becomes "READING", not "reading") and are represented in the schema as
+  [JSON Schema enums](https://json-schema.org/understanding-json-schema/reference/enum)
 
 ## User Guide
 
@@ -72,19 +73,19 @@ from grandschemathings import GrandSchemaThings
 
 
 @dataclass
-class MyData(GrandSchemaThings):
+class Person(GrandSchemaThings):
     name: str
     age: int
 
 
 # Create an instance
-data = MyData(name="Alice", age=30)
+data = Person(name="Alice", age=30)
 
 # Serialize to JSON file
 data.to_file(Path("data.json"), pretty=True)
 
 # Deserialize from JSON file
-loaded_data = MyData.from_file(Path("data.json"))
+loaded_data = Person.from_file(Path("data.json"))
 print(loaded_data)
 ```
 
@@ -124,9 +125,9 @@ class User(GrandSchemaThings):
 
 # Create an instance
 user = User(
-    name="Bob",
-    age=25,
-    address=Address(street="456 Elm St", city="Faketown", postcode="AB12 3CD"),
+    name="Robert",
+    age=42,
+    address=Address(street="28 Alderwick Road", city="London", postcode="SW14 7QJ"),
     hobbies={Hobby.READING: 5, Hobby.CYCLING: 3, Hobby.COOKING: 4, Hobby.GARDENING: 1},
 )
 
