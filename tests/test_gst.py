@@ -2,10 +2,11 @@ import json
 from pathlib import Path
 
 import pytest
+from jsonschema.exceptions import ValidationError
 
 from grandschemathings.grandschemathings import _type_schema
 
-from .example_classes import NestedGst, SampleGst
+from .example_classes import FloatGst, NestedGst, SampleGst
 
 
 def test_schema():
@@ -168,6 +169,39 @@ def test_nested_to_json_dict(nested_gst_instance, nested_gst_json_dict):
 )
 def test_type_schema(attr_type, expected_schema):
     assert _type_schema(attr_type) == expected_schema
+
+
+def test_float_fields_accept_whole_number_json():
+    # JSON has a single number type, so 5 is valid for a float field.
+    instance = FloatGst.from_json_dict({"reading": 5, "readings": [1, 2.5]})
+    assert instance == FloatGst(reading=5.0, readings=[1.0, 2.5])
+    assert isinstance(instance.reading, float)
+    assert all(isinstance(r, float) for r in instance.readings)
+
+
+def test_float_fields_round_trip_integer_values(tmp_path: Path):
+    json_file = tmp_path / "data.json"
+    FloatGst(reading=5, readings=[1, 2]).to_file(json_file)
+    loaded = FloatGst.from_file(json_file)
+    assert loaded == FloatGst(reading=5.0, readings=[1.0, 2.0])
+    assert isinstance(loaded.reading, float)
+
+
+def test_int_fields_accept_whole_number_floats():
+    # The "integer" schema type accepts 5.0, so the value must load as an int.
+    instance = SampleGst.from_json_dict({"name": "a", "value": 5.0, "flag": True})
+    assert instance.value == 5
+    assert isinstance(instance.value, int)
+
+
+def test_int_fields_still_reject_fractional_numbers():
+    with pytest.raises(ValidationError):
+        SampleGst.from_json_dict({"name": "a", "value": 5.5, "flag": True})
+
+
+def test_float_fields_still_reject_booleans():
+    with pytest.raises(ValidationError):
+        FloatGst.from_json_dict({"reading": True, "readings": []})
 
 
 def test_empty_string():

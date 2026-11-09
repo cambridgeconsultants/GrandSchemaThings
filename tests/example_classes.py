@@ -35,6 +35,12 @@ class NestedGst(GrandSchemaThings):
 
 
 @dataclass
+class FloatGst(GrandSchemaThings):
+    reading: float
+    readings: list[float]
+
+
+@dataclass
 class IntEnumGst(GrandSchemaThings):
     value: Number
 
