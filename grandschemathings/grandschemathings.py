@@ -391,9 +391,9 @@ def _convert_from_jsonlike(
         and isinstance(data, int)
         and not isinstance(data, bool)
     ):
-        return cast(ScalarType, float(data))
+        return cast(Any, float(data))
     if target_type_raw is int and isinstance(data, float) and data.is_integer():
-        return cast(ScalarType, int(data))
+        return cast(Any, int(data))
 
     # If we've not returned by this point, the data should be an instance of the raw
     # type. Make sure it is.
