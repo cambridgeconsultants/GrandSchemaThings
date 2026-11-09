@@ -201,6 +201,28 @@ def test_convert_from_jsonlike(data, target_type, expected):
     assert _convert_from_jsonlike(data, target_type) == expected
 
 
+def test_convert_from_jsonlike_int_to_float():
+    converted = _convert_from_jsonlike(5, float)
+    assert converted == 5.0
+    assert isinstance(converted, float)
+
+
+def test_convert_from_jsonlike_whole_float_to_int():
+    converted = _convert_from_jsonlike(5.0, int)
+    assert converted == 5
+    assert isinstance(converted, int)
+
+
+def test_convert_from_jsonlike_rejects_fractional_float_for_int():
+    with pytest.raises(TypeError):
+        _convert_from_jsonlike(5.5, int)
+
+
+def test_convert_from_jsonlike_rejects_bool_for_float():
+    with pytest.raises(TypeError):
+        _convert_from_jsonlike(True, float)
+
+
 def test_prepare_for_json_intenum_uses_name():
     assert _prepare_for_json(Number.ONE) == "ONE"
 

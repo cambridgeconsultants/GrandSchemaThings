@@ -384,6 +384,17 @@ def _convert_from_jsonlike(
         target_type_raw = cast(type[GrandSchemaThings], target_type_raw)
         return target_type_raw.from_json_dict(data)
 
+    # JSON has a single number type: the generated schema accepts 5 for a "number"
+    # and 5.0 for an "integer", so load those as float and int respectively.
+    if (
+        target_type_raw is float
+        and isinstance(data, int)
+        and not isinstance(data, bool)
+    ):
+        return cast(Any, float(data))
+    if target_type_raw is int and isinstance(data, float) and data.is_integer():
+        return cast(Any, int(data))
+
     # If we've not returned by this point, the data should be an instance of the raw
     # type. Make sure it is.
     if not isinstance(data, target_type_raw):
